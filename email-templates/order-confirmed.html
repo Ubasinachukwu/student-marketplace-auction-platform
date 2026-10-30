@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - {{SITE_NAME}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .order-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #0d6efd;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background: #0a58ca;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 12px;
+            border-top: 1px solid #e9ecef;
+        }
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-table td {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .order-table .label {
+            color: #6c757d;
+        }
+        .order-table .value {
+            font-weight: 500;
+        }
+        .total-row td {
+            font-weight: bold;
+            border-bottom: 2px solid #0d6efd;
+            padding-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Order Confirmed!</h1>
+            <p>Your order #{{ORDER_NUMBER}} has been confirmed</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hi {{USER_NAME}},</h2>
+            
+            <p>Great news! Your order <strong>#{{ORDER_NUMBER}}</strong> has been confirmed by the seller.</p>
+            
+            <div class="order-details">
+                <h3 style="margin-top: 0;">Order Summary</h3>
+                
+                <table class="order-table">
+                    <tr>
+                        <td class="label">Order Number</td>
+                        <td class="value">#{{ORDER_NUMBER}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Item</td>
+                        <td class="value">{{LISTING_TITLE}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Seller</td>
+                        <td class="value">{{SELLER_NAME}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Total Amount</td>
+                        <td class="value">${{TOTAL_AMOUNT}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Order Date</td>
+                        <td class="value">{{ORDER_DATE}}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td class="label">Payment Status</td>
+                        <td class="value" style="color: #198754;">{{PAYMENT_STATUS}}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <p><strong>What happens next?</strong></p>
+            
+            <ol>
+                <li>The seller will prepare and ship your item.</li>
+                <li>You'll receive a shipping notification with tracking details.</li>
+                <li>Track your order and confirm delivery when you receive it.</li>
+            </ol>
+            
+            <p style="text-align: center;">
+                <a href="{{ORDER_LINK}}" class="button">View Order Details</a>
+            </p>
+            
+            <p style="text-align: center;">
+                <a href="{{TRACKING_LINK}}" class="button" style="background: #6c757d;">Track Your Order</a>
+            </p>
+            
+            <p>
+                Best regards,<br>
+                <strong>{{SITE_NAME}} Team</strong>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; {{YEAR}} {{SITE_NAME}}. All rights reserved.</p>
+            <p><small>You received this email because you placed an order on {{SITE_NAME}}.</small></p>
+        </div>
+    </div>
+</body>
+</html>

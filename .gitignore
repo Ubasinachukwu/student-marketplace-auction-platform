@@ -1,0 +1,69 @@
+
+# ==================================
+# PRIVATE ENVIRONMENT CONFIGURATION
+# ==================================
+.env
+.env.*
+!.env.example
+.env1
+env-contents.txt
+
+# =================
+# LOGS AND TEMP FILES
+# =================
+/logs/
+*.log
+/debug-output.txt
+/debug-step.txt
+/out.txt
+/output.txt
+
+# =================
+# DEBUGGING AND TEST SCRIPTS
+# =================
+/debug-password.php
+/phpinfo.php
+/test.php
+/test-email.php
+/test-path.php
+/check-gd.php
+
+/api/admin/test-email.php
+/api/orders/test-database.php
+/api/orders/test-functions.php
+/api/orders/test-order-class.php
+/api/orders/test-order.php
+/api/orders/test-session.php
+
+# =================
+# OLD OR BROKEN FILES
+# =================
+/buyer/listing-detail.BROKEN.php
+*.bak
+*.backup
+*.backup-*
+*.old
+*.orig
+
+# =================
+# PRIVATE TEST DATABASE DATA
+# =================
+/reset-test-users.sql
+/database/seed.sql
+/sql/seed-users.sql
+
+# =================
+# ARCHIVED PROJECT COPIES
+# =================
+*.zip
+*.rar
+*.7z
+
+# =================
+# OPERATING SYSTEM FILES
+# =================
+.DS_Store
+Thumbs.db
+desktop.ini
+/test card
+/sql/seed-data.sql

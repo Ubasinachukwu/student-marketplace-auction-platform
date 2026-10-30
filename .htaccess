@@ -1,0 +1,63 @@
+# marketplace/.htaccess
+# Apache 2.4 syntax — verified working on Apache/2.4.58
+
+# =============================================================
+# 1. Disable directory listing
+# =============================================================
+Options -Indexes
+
+# =============================================================
+# 2. Block direct HTTP access to sensitive files
+# =============================================================
+<FilesMatch "(^\.env.*|^\.htaccess$|^\.htpasswd$|^composer\.(json|lock)$|^README\.md$|\.(bak|backup|old|orig|log|sql|sqlite|db)$)">
+    Require all denied
+</FilesMatch>
+
+# =============================================================
+# 3. Block direct HTTP access to sensitive top-level directories
+# =============================================================
+RedirectMatch 404 ^/(?:marketplace/)?(config|classes|logs|sql|cron|includes|lib|email-templates)(/|$)
+
+# =============================================================
+# 4. Rewrite rules
+#    REMOVED — this project uses direct .php URLs everywhere.
+#    The previous rewrite block was causing redirect loops on
+#    Windows XAMPP with subfolder installs. No rewriting needed.
+# =============================================================
+
+# =============================================================
+# 5. Error pages
+# =============================================================
+ErrorDocument 404 /marketplace/404.php
+ErrorDocument 403 /marketplace/403.php
+
+# =============================================================
+# 6. Security headers
+# =============================================================
+<IfModule mod_headers.c>
+    Header unset X-Powered-By
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# =============================================================
+# 7. Static asset caching
+# =============================================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                "access plus 30 days"
+    ExpiresByType application/javascript  "access plus 30 days"
+    ExpiresByType image/jpeg              "access plus 30 days"
+    ExpiresByType image/png               "access plus 30 days"
+    ExpiresByType image/webp              "access plus 30 days"
+    ExpiresByType image/svg+xml           "access plus 30 days"
+    ExpiresByType image/x-icon            "access plus 30 days"
+</IfModule>
+
+# =============================================================
+# 8. Compression
+# =============================================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml text/javascript application/javascript application/json application/xml
+</IfModule>

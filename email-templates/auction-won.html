@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congratulations! You Won! - {{SITE_NAME}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #198754, #157347);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header .emoji {
+            font-size: 48px;
+            display: block;
+        }
+        .content {
+            padding: 30px;
+        }
+        .win-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #198754;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #198754;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background: #157347;
+        }
+        .button-secondary {
+            background: #6c757d;
+        }
+        .button-secondary:hover {
+            background: #5a6268;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 12px;
+            border-top: 1px solid #e9ecef;
+        }
+        .badge-gold {
+            background: #ffc107;
+            color: #212529;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="emoji">🏆</span>
+            <h1>Congratulations!</h1>
+            <p>You won the auction for {{LISTING_TITLE}}!</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hi {{USER_NAME}},</h2>
+            
+            <p>🎉 <strong>Congratulations!</strong> You have won the auction for <strong>{{LISTING_TITLE}}</strong>!</p>
+            
+            <div class="win-details">
+                <p><strong>Winning Bid:</strong> <span class="badge-gold">${{WINNING_BID}}</span></p>
+                <p><strong>Listing:</strong> {{LISTING_TITLE}}</p>
+                <p><strong>Seller:</strong> {{SELLER_NAME}}</p>
+                <p><strong>Auction Ended:</strong> {{AUCTION_END}}</p>
+            </div>
+            
+            <h3>What's Next?</h3>
+            
+            <ol>
+                <li><strong>Complete Payment</strong> - You have {{PAYMENT_WINDOW}} hours to complete payment.</li>
+                <li><strong>Wait for Shipping</strong> - The seller will ship the item after payment.</li>
+                <li><strong>Receive Your Item</strong> - Track your order and confirm delivery.</li>
+                <li><strong>Leave Feedback</strong> - Share your experience with the seller.</li>
+            </ol>
+            
+            <p style="text-align: center;">
+                <a href="{{ORDER_LINK}}" class="button">Complete Payment Now</a>
+            </p>
+            
+            <p style="text-align: center;">
+                <a href="{{LISTING_LINK}}" class="button button-secondary">View Listing</a>
+            </p>
+            
+            <p>If you have any questions, feel free to <a href="{{CONTACT_LINK}}">contact the seller</a>.</p>
+            
+            <p>
+                Best regards,<br>
+                <strong>{{SITE_NAME}} Team</strong>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; {{YEAR}} {{SITE_NAME}}. All rights reserved.</p>
+            <p><small>You received this email because you won an auction on {{SITE_NAME}}.</small></p>
+        </div>
+    </div>
+</body>
+</html>

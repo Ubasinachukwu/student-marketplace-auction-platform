@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Order Has Shipped - {{SITE_NAME}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #fd7e14, #d39e00);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .shipping-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #fd7e14;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background: #0a58ca;
+        }
+        .button-warning {
+            background: #fd7e14;
+        }
+        .button-warning:hover {
+            background: #d39e00;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 12px;
+            border-top: 1px solid #e9ecef;
+        }
+        .tracking-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .tracking-box code {
+            font-size: 16px;
+            font-weight: bold;
+            color: #212529;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Your Order Has Shipped!</h1>
+            <p>Order #{{ORDER_NUMBER}} is on its way</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hi {{USER_NAME}},</h2>
+            
+            <p>Great news! Your order <strong>#{{ORDER_NUMBER}}</strong> has been shipped by the seller.</p>
+            
+            <div class="shipping-details">
+                <h3 style="margin-top: 0;">Shipping Information</h3>
+                
+                <p><strong>Carrier:</strong> {{CARRIER}}</p>
+                
+                <div class="tracking-box">
+                    <p style="margin: 0;">
+                        <strong>Tracking Number:</strong><br>
+                        <code>{{TRACKING_NUMBER}}</code>
+                    </p>
+                </div>
+                
+                <p><strong>Shipped On:</strong> {{SHIPPED_DATE}}</p>
+                <p><strong>Estimated Delivery:</strong> {{ESTIMATED_DELIVERY}}</p>
+            </div>
+            
+            <p><strong>What's Next?</strong></p>
+            
+            <ol>
+                <li>Track your package using the tracking number above.</li>
+                <li>Check the carrier's website for real-time updates.</li>
+                <li>When you receive the item, confirm delivery on {{SITE_NAME}}.</li>
+                <li>Don't forget to leave a review for the seller!</li>
+            </ol>
+            
+            <p style="text-align: center;">
+                <a href="{{TRACKING_LINK}}" class="button button-warning">Track Your Package</a>
+            </p>
+            
+            <p style="text-align: center;">
+                <a href="{{ORDER_LINK}}" class="button">View Order Details</a>
+            </p>
+            
+            <p>If you have any questions about your shipment, feel free to <a href="{{CONTACT_SELLER_LINK}}">contact the seller</a>.</p>
+            
+            <p>
+                Best regards,<br>
+                <strong>{{SITE_NAME}} Team</strong>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; {{YEAR}} {{SITE_NAME}}. All rights reserved.</p>
+            <p><small>You received this email because your order was shipped on {{SITE_NAME}}.</small></p>
+        </div>
+    </div>
+</body>
+</html>

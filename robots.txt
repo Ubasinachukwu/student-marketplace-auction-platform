@@ -1,0 +1,34 @@
+# robots.txt for MarketPlace
+# Learn more: https://www.robotstxt.org/
+
+User-agent: *
+
+# Allow public pages
+Allow: /
+Allow: /buyer/browse.php
+Allow: /buyer/listing-detail.php
+
+# Block admin and internal areas
+Disallow: /admin/
+Disallow: /seller/
+Disallow: /api/
+Disallow: /config/
+Disallow: /classes/
+Disallow: /includes/
+Disallow: /logs/
+Disallow: /lib/
+
+# Block private pages
+Disallow: /auth/
+Disallow: /buyer/cart.php
+Disallow: /buyer/checkout.php
+Disallow: /buyer/settings.php
+Disallow: /buyer/payment-success.php
+
+# Block query-string duplicates (Google uses canonical instead)
+Disallow: /*?*sort=
+Disallow: /*?*page=1
+Disallow: /*?*filter=
+
+# Sitemap location
+Sitemap: http://localhost/marketplace/sitemap.php

@@ -1,0 +1,33 @@
+id	name	parent_id
+11	Smartphones	1
+12	Laptops	1
+13	Cameras	1
+14	Audio	1
+53	Tablets	1
+15	Men	2
+16	Women	2
+17	Kids	2
+18	Shoes	2
+54	Men's Clothing	2
+55	Women's Clothing	2
+56	Kids' Clothing	2
+57	Fiction	3
+59	Magazines	3
+60	Decor	4
+61	Garden	4
+62	Board Games	5
+63	Video Games	5
+64	Outdoor Toys	5
+65	Fitness	6
+66	Camping	6
+67	Team Sports	6
+68	Art	7
+69	Antiques	7
+70	Car Parts	8
+71	Tools	8
+72	Skincare	9
+73	Makeup	9
+74	Wellness	9
+75	Dog Supplies	10
+76	Cat Supplies	10
+77	Small Pet	10

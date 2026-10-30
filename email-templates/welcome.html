@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{SITE_NAME}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background: #0a58ca;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 12px;
+            border-top: 1px solid #e9ecef;
+        }
+        .badge {
+            background: #198754;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .social-links a {
+            color: #6c757d;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to {{SITE_NAME}}!</h1>
+            <p>Your trusted marketplace for buying and selling</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hi {{USER_NAME}},</h2>
+            
+            <p>Thank you for joining {{SITE_NAME}}! We're excited to have you as part of our community.</p>
+            
+            <p>To get started, please verify your email address by clicking the button below:</p>
+            
+            <p style="text-align: center;">
+                <a href="{{VERIFY_LINK}}" class="button">Verify Email Address</a>
+            </p>
+            
+            <p>Or copy and paste this link into your browser:</p>
+            <p><a href="{{VERIFY_LINK}}">{{VERIFY_LINK}}</a></p>
+            
+            <p>Here's what you can do on {{SITE_NAME}}:</p>
+            
+            <ul>
+                <li><strong>Buy</strong> - Browse thousands of quality used items at great prices</li>
+                <li><strong>Sell</strong> - List your items and earn cash</li>
+                <li><strong>Bid</strong> - Participate in auctions and win amazing deals</li>
+                <li><strong>Connect</strong> - Message other users and build your reputation</li>
+            </ul>
+            
+            <p>If you have any questions, feel free to <a href="{{CONTACT_LINK}}">contact our support team</a>.</p>
+            
+            <p style="margin-top: 30px;">
+                Best regards,<br>
+                <strong>{{SITE_NAME}} Team</strong>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; {{YEAR}} {{SITE_NAME}}. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#">Facebook</a> |
+                <a href="#">Twitter</a> |
+                <a href="#">Instagram</a>
+            </div>
+            <p style="margin-top: 10px;">
+                <small>You received this email because you registered on {{SITE_NAME}}.</small>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

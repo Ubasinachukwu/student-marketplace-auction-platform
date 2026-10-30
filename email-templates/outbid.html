@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You've Been Outbid - {{SITE_NAME}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #dc3545, #b02a37);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .bid-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #dc3545;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background: #0a58ca;
+        }
+        .button-danger {
+            background: #dc3545;
+        }
+        .button-danger:hover {
+            background: #b02a37;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 12px;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>😔 You've Been Outbid!</h1>
+            <p>Someone else placed a higher bid on {{LISTING_TITLE}}</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hi {{USER_NAME}},</h2>
+            
+            <p>Unfortunately, you have been outbid on <strong>{{LISTING_TITLE}}</strong>.</p>
+            
+            <div class="bid-details">
+                <p><strong>Your Bid:</strong> ${{YOUR_BID}}</p>
+                <p><strong>New Current Bid:</strong> ${{NEW_CURRENT_BID}}</p>
+                <p><strong>Listing:</strong> {{LISTING_TITLE}}</p>
+                <p><strong>Seller:</strong> {{SELLER_NAME}}</p>
+                <p><strong>Auction Ends:</strong> {{AUCTION_END}}</p>
+            </div>
+            
+            <p>Don't give up! You can place a new bid to try and win this auction.</p>
+            
+            <p style="text-align: center;">
+                <a href="{{LISTING_LINK}}" class="button button-danger">Place New Bid</a>
+            </p>
+            
+            <p>Hurry! The auction is still active and you might still win.</p>
+            
+            <p>
+                Best regards,<br>
+                <strong>{{SITE_NAME}} Team</strong>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; {{YEAR}} {{SITE_NAME}}. All rights reserved.</p>
+            <p><small>You received this email because you placed a bid on {{SITE_NAME}}.</small></p>
+        </div>
+    </div>
+</body>
+</html>

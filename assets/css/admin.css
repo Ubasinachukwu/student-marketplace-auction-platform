@@ -1,0 +1,170 @@
+/* marketplace/assets/css/admin.css */
+
+/* Default Light Mode Variables */
+:root {
+    --admin-bg: #f4f7f6;
+    --admin-card-bg: #ffffff;
+    --admin-text: #1e293b;
+    --admin-border: #e2e8f0;
+    --admin-sidebar-bg: #ffffff;
+    --admin-sidebar-hover: #f1f5f9;
+    --admin-sidebar-active: #e0f2fe; /* Soft blue */
+    --admin-sidebar-active-text: #0284c7;
+    --admin-text-muted: #64748b;
+}
+
+/* Dark Mode Variables */
+[data-bs-theme="dark"] {
+    --admin-bg: #0f172a; 
+    --admin-card-bg: #1e293b; 
+    --admin-text: #f8fafc;
+    --admin-border: #334155;
+    --admin-sidebar-bg: #1e293b;
+    --admin-sidebar-hover: #334155;
+    --admin-sidebar-active: #1e3a8a; 
+    --admin-sidebar-active-text: #60a5fa;
+    --admin-text-muted: #94a3b8;
+}
+
+/* Base Layout */
+body {
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ------------------------------------------- */
+/* SIDEBAR STYLING                             */
+/* ------------------------------------------- */
+.admin-sidebar-wrapper {
+    background-color: var(--admin-sidebar-bg);
+    border-right: 1px solid var(--admin-border);
+    min-height: 100vh;
+}
+
+.sidebar-custom { height: 100vh; overflow-y: auto; }
+
+.sidebar-link {
+    color: var(--admin-text-muted);
+    font-weight: 500;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-link i { font-size: 1.2rem; margin-right: 12px; }
+
+.sidebar-link:hover {
+    background-color: var(--admin-sidebar-hover);
+    color: var(--admin-text);
+}
+
+.sidebar-link.active {
+    background-color: var(--admin-sidebar-active);
+    color: var(--admin-sidebar-active-text);
+    font-weight: 600;
+}
+
+/* ------------------------------------------- */
+/* MODERN DASHBOARD CARDS (Replaced Blue Cards) */
+/* ------------------------------------------- */
+.dash-card {
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    transition: transform 0.2s;
+    height: 100%;
+}
+.dash-card:hover { transform: translateY(-3px); }
+
+.dash-card-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Soft Icon Colors */
+.bg-icon-blue { background: #e0f2fe; color: #0284c7; }
+.bg-icon-green { background: #dcfce7; color: #16a34a; }
+.bg-icon-purple { background: #f3e8ff; color: #9333ea; }
+.bg-icon-orange { background: #ffedd5; color: #ea580c; }
+
+[data-bs-theme="dark"] .bg-icon-blue { background: rgba(2, 132, 199, 0.2); }
+[data-bs-theme="dark"] .bg-icon-green { background: rgba(22, 163, 74, 0.2); }
+[data-bs-theme="dark"] .bg-icon-purple { background: rgba(147, 51, 234, 0.2); }
+[data-bs-theme="dark"] .bg-icon-orange { background: rgba(234, 88, 12, 0.2); }
+
+.dash-card h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.2rem; }
+.dash-card .text-muted { font-size: 0.85rem; }
+
+/* ------------------------------------------- */
+/* TABLES & CONTAINERS                         */
+/* ------------------------------------------- */
+.card {
+    border-radius: 16px;
+    background-color: var(--admin-card-bg);
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    color: var(--admin-text);
+}
+
+.card-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--admin-border) !important;
+    padding: 1rem 1.25rem;
+}
+
+.table { color: var(--admin-text); }
+.table th {
+    font-weight: 600; font-size: 0.75rem; text-transform: uppercase;
+    color: var(--admin-text-muted); border-bottom: 1px solid var(--admin-border);
+}
+.table td {
+    vertical-align: middle; border-bottom: 1px solid var(--admin-border);
+}
+.table-hover tbody tr:hover td {
+    background-color: var(--admin-sidebar-hover) !important;
+}
+
+/* ------------------------------------------- */
+/* SMALL PRODUCT THUMBNAIL                     */
+/* ------------------------------------------- */
+.product-thumb {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--admin-border);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.product-thumb:hover { transform: scale(1.05); }
+
+/* Modal Image */
+#modalProductImage {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f8f9fa;
+}
+
+/* Live Feed */
+.admin-live-feed .feed-item {
+    border-bottom: 1px solid var(--admin-border);
+    padding: 12px 0;
+}
+.feed-icon {
+    width: 32px; height: 32px; font-size: 0.9rem;
+}
+.feed-icon.bid { background: #3b82f6; }
+.feed-icon.order { background: #10b981; }
+.feed-icon.user { background: #f59e0b; }
+.feed-icon.listing { background: #8b5cf6; }
+.feed-icon.payment { background: #14b8a6; }
