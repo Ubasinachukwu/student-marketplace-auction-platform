@@ -601,55 +601,100 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
+
 const nigeriaStatesLGAs = <?php echo getStatesLGAsJson(); ?>;
 
-function loadShippingLGAs(state) {
+const savedCheckoutLGA = <?php echo json_encode(
+    $shippingLga,
+    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+); ?>;
+
+function loadShippingLGAs(state, selectedLGA = '') {
     const lgaSelect = document.getElementById('shipping_lga');
+
+    if (!lgaSelect) {
+        return;
+    }
+
     lgaSelect.innerHTML = '<option value="">Select LGA</option>';
-    if (!state || !nigeriaStatesLGAs[state]) return;
+
+    if (
+        !state ||
+        !Object.prototype.hasOwnProperty.call(nigeriaStatesLGAs, state)
+    ) {
+        return;
+    }
+
     nigeriaStatesLGAs[state].forEach(function(lga) {
         const option = document.createElement('option');
+
         option.value = lga;
         option.textContent = lga;
+
+        if (lga === selectedLGA) {
+            option.selected = true;
+        }
+
         lgaSelect.appendChild(option);
     });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.form-check.card').forEach(card => {
+
+    // Restore the saved shipping LGA on initial page loading.
+    const stateSelect = document.getElementById('shipping_state');
+
+    if (stateSelect && stateSelect.value) {
+        loadShippingLGAs(stateSelect.value, savedCheckoutLGA);
+    }
+
+    // Payment method card selection.
+    document.querySelectorAll('.form-check.card').forEach(function(card) {
         card.addEventListener('click', function() {
             const radio = this.querySelector('input[type="radio"]');
+
             if (radio) {
                 radio.checked = true;
-                document.querySelectorAll('.form-check.card').forEach(c => c.classList.remove('border-primary'));
+
+                document.querySelectorAll('.form-check.card').forEach(function(c) {
+                    c.classList.remove('border-primary');
+                });
+
                 this.classList.add('border-primary');
             }
         });
     });
 
-    const stateSelect = document.getElementById('shipping_state');
-    if (stateSelect && stateSelect.value) {
-        const currentLga = <?php echo json_encode($shippingLga); ?>;
-        loadShippingLGAs(stateSelect.value);
-        if (currentLga) {
-            document.getElementById('shipping_lga').value = currentLga;
-        }
-    }
+    // Prevent repeated payment submissions during redirection.
+    const checkoutForm = document.getElementById('checkoutForm');
+    const submitBtn = document.getElementById('submitBtn');
 
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-        const checked = document.querySelector('input[name="payment_method"]:checked');
-        if (!checked) return;
-        const paymentMethod = checked.value;
-        const btn = document.getElementById('submitBtn');
-        if (paymentMethod === 'flutterwave') {
-            btn.disabled = true;
-            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Redirecting to Flutterwave...';
-        } else if (paymentMethod === 'paystack') {
-            btn.disabled = true;
-            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Redirecting to Paystack...';
-        }
-    });
+    if (checkoutForm && submitBtn) {
+        checkoutForm.addEventListener('submit', function() {
+            const checked = document.querySelector(
+                'input[name="payment_method"]:checked'
+            );
+
+            if (!checked) {
+                return;
+            }
+
+            if (
+                checked.value === 'flutterwave' ||
+                checked.value === 'paystack'
+            ) {
+                submitBtn.disabled = true;
+
+                const provider = checked.value === 'flutterwave'
+                    ? 'Flutterwave'
+                    : 'Paystack';
+
+                submitBtn.innerHTML =
+                    '<i class="bi bi-hourglass-split"></i> Redirecting to ' +
+                    provider + '...';
+            }
+        });
+    }
 });
 </script>
-
 <?php include __DIR__ . '/../includes/footer.php'; ?>

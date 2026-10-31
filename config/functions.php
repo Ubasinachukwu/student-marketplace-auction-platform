@@ -4,175 +4,474 @@
 require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/location-helper.php';
 
-// =============================================
+/// =============================================
 // SECURITY FUNCTIONS
 // =============================================
 
+/**
+ * Sanitize input while preserving the existing project's behaviour.
+ * This function trims strings and HTML-escapes them.
+ *
+ * Note: Use prepared SQL statements for database queries.
+ * This function is not SQL injection protection.
+ */
 function sanitize($input) {
     if (is_array($input)) {
         return array_map('sanitize', $input);
     }
-    return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
+
+    if ($input === null) {
+        return '';
+    }
+
+    if (!is_scalar($input)) {
+        return '';
+    }
+
+    return htmlspecialchars(
+        trim((string) $input),
+        ENT_QUOTES | ENT_SUBSTITUTE,
+        'UTF-8'
+    );
 }
 
+/**
+ * Escape a value for safe HTML output.
+ */
+function escapeHtml($input) {
+    if ($input === null) {
+        return '';
+    }
+
+    if (!is_scalar($input)) {
+        return '';
+    }
+
+    return htmlspecialchars(
+        (string) $input,
+        ENT_QUOTES | ENT_SUBSTITUTE,
+        'UTF-8'
+    );
+}
+
+/**
+ * Legacy compatibility helper.
+ *
+ * Do not use this function to secure SQL queries.
+ * Use PDO prepared statements instead.
+ */
 function escape($input) {
-    return addslashes($input);
+    if ($input === null) {
+        return '';
+    }
+
+    if (!is_scalar($input)) {
+        return '';
+    }
+
+    return addslashes((string) $input);
 }
 
+/**
+ * Generate a cryptographically secure random token.
+ */
 function generateToken($length = 32) {
+    $length = (int) $length;
+
+    if ($length < 1 || $length > 128) {
+        throw new InvalidArgumentException(
+            'Token length must be between 1 and 128.'
+        );
+    }
+
     return bin2hex(random_bytes($length));
 }
 
+/**
+ * Hash a password securely.
+ */
 function hashPassword($password) {
-    return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+    return password_hash(
+        (string) $password,
+        PASSWORD_BCRYPT,
+        ['cost' => 12]
+    );
 }
 
+/**
+ * Verify a password against its stored hash.
+ */
 function verifyPassword($password, $hash) {
-    return password_verify($password, $hash);
+    return password_verify((string) $password, (string) $hash);
 }
 
+/**
+ * Generate a secure random alphanumeric string.
+ */
 function generateRandomString($length = 10) {
-    return substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, $length);
-}
+    $length = (int) $length;
 
+    if ($length < 1 || $length > 128) {
+        throw new InvalidArgumentException(
+            'String length must be between 1 and 128.'
+        );
+    }
+
+    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $maxIndex = strlen($characters) - 1;
+    $result = '';
+
+    for ($i = 0; $i < $length; $i++) {
+        $result .= $characters[random_int(0, $maxIndex)];
+    }
+
+    return $result;
+}
 // =============================================
 // URL FUNCTIONS
 // =============================================
 
+/**
+ * Redirect safely within the application.
+ * External redirects are rejected unless they point to this site.
+ */
 function redirect($path = '') {
-    if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) {
-        header('Location: ' . $path);
+    $path = trim((string) $path);
+
+    $siteParts = parse_url(SITE_URL);
+    $target = $path;
+
+    // Check whether the supplied destination is an absolute URL.
+    if (preg_match('#^https?://#i', $path)) {
+        $targetParts = parse_url($path);
+
+        $sameHost = isset($siteParts['host'], $targetParts['host'])
+            && strcasecmp($siteParts['host'], $targetParts['host']) === 0;
+
+        $sameScheme = isset($siteParts['scheme'], $targetParts['scheme'])
+            && strtolower($siteParts['scheme']) === strtolower($targetParts['scheme']);
+
+        $samePort = ($siteParts['port'] ?? null) === ($targetParts['port'] ?? null);
+
+        if (!$sameHost || !$sameScheme || !$samePort) {
+            $target = SITE_URL;
+        }
     } else {
-        header('Location: ' . base_url($path));
+        // Reject protocol-relative URLs and unsafe control characters.
+        if (
+            strpos($path, '//') === 0 ||
+            preg_match('/[\r\n]/', $path)
+        ) {
+            $target = SITE_URL;
+        } else {
+            $target = base_url($path);
+        }
     }
+
+    if (headers_sent()) {
+        return false;
+    }
+
+    header('Location: ' . $target, true, 302);
     exit();
 }
 
+/**
+ * Return to the referring page only when it belongs to this site.
+ */
 function back() {
-    if (isset($_SERVER['HTTP_REFERER'])) {
-        header('Location: ' . $_SERVER['HTTP_REFERER']);
-    } else {
-        redirect('/');
+    $referer = $_SERVER['HTTP_REFERER'] ?? '';
+
+    if ($referer !== '') {
+        $refererParts = parse_url($referer);
+        $siteParts = parse_url(SITE_URL);
+
+        $sameHost = isset($refererParts['host'], $siteParts['host'])
+            && strcasecmp($refererParts['host'], $siteParts['host']) === 0;
+
+        $sameScheme = isset($refererParts['scheme'], $siteParts['scheme'])
+            && strtolower($refererParts['scheme']) === strtolower($siteParts['scheme']);
+
+        $samePort = ($refererParts['port'] ?? null) === ($siteParts['port'] ?? null);
+
+        if ($sameHost && $sameScheme && $samePort) {
+            redirect($referer);
+        }
     }
-    exit();
+
+    redirect('/');
 }
 
+/**
+ * Get the current application URL using validated server information.
+ */
 function currentUrl() {
-    return (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . 
-           $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+
+    if (
+        $host === '' ||
+        !preg_match('/^[a-zA-Z0-9.-]+(?::[0-9]{1,5})?$/', $host) ||
+        preg_match('/[\r\n]/', $requestUri)
+    ) {
+        return SITE_URL . '/';
+    }
+
+    $isHttps = (
+        !empty($_SERVER['HTTPS']) &&
+        strtolower((string) $_SERVER['HTTPS']) !== 'off'
+    );
+
+    $scheme = $isHttps ? 'https' : 'http';
+
+    return $scheme . '://' . $host . $requestUri;
 }
 
 /**
  * Build a canonical URL for a listing.
- * Includes the slug for readability and SEO.
- *
- * @param array $listing Listing row (needs 'id', 'slug', 'title')
- * @return string Full URL like /buyer/listing-detail.php?id=42&slug=iphone-13-pro
  */
 function listingUrl($listing) {
     if (empty($listing['id'])) {
         return SITE_URL . '/buyer/browse.php';
     }
-    $id = (int)$listing['id'];
-    $slug = !empty($listing['slug'])
-        ? $listing['slug']
-        : slugify($listing['title'] ?? 'listing');
-    return SITE_URL . '/buyer/listing-detail.php?id=' . $id . '&slug=' . urlencode($slug);
-}
 
+    $id = (int) $listing['id'];
+
+    $slug = !empty($listing['slug'])
+        ? (string) $listing['slug']
+        : slugify($listing['title'] ?? 'listing');
+
+    return SITE_URL . '/buyer/listing-detail.php?id='
+        . $id . '&slug=' . rawurlencode($slug);
+}
 // =============================================
 // DATE & TIME FUNCTIONS
 // =============================================
 
-function formatDate($datetime, $format = 'M d, Y') {
-    if (empty($datetime)) return 'N/A';
-    return date($format, strtotime($datetime));
-}
-
-function formatTime($datetime, $format = 'g:i A') {
-    if (empty($datetime)) return 'N/A';
-    return date($format, strtotime($datetime));
-}
-
-function formatDateTime($datetime, $format = 'M d, Y g:i A') {
-    if (empty($datetime)) return 'N/A';
-    return date($format, strtotime($datetime));
-}
-
-function timeAgo($datetime) {
-    $time = strtotime($datetime);
-    $diff = time() - $time;
-    
-    if ($diff < 60) {
-        return $diff . ' seconds ago';
-    } elseif ($diff < 3600) {
-        return floor($diff / 60) . ' minutes ago';
-    } elseif ($diff < 86400) {
-        return floor($diff / 3600) . ' hours ago';
-    } elseif ($diff < 604800) {
-        return floor($diff / 86400) . ' days ago';
-    } elseif ($diff < 2592000) {
-        return floor($diff / 604800) . ' weeks ago';
-    } else {
-        return date('M d, Y', $time);
+/**
+ * Convert a date value into a Unix timestamp.
+ * Returns false when the value is empty or invalid.
+ */
+function parseDateTimestamp($datetime) {
+    if (
+        $datetime === null ||
+        $datetime === '' ||
+        !is_scalar($datetime)
+    ) {
+        return false;
     }
+
+    $timestamp = strtotime((string) $datetime);
+
+    return ($timestamp === false) ? false : $timestamp;
 }
 
-function timeRemaining($datetime) {
-    $now = time();
-    $end = strtotime($datetime);
-    $diff = $end - $now;
-    
-    if ($diff <= 0) {
+/**
+ * Format a date safely.
+ */
+function formatDate($datetime, $format = 'M d, Y') {
+    $timestamp = parseDateTimestamp($datetime);
+
+    return ($timestamp === false)
+        ? 'N/A'
+        : date($format, $timestamp);
+}
+
+/**
+ * Format a time safely.
+ */
+function formatTime($datetime, $format = 'h:i A') {
+    $timestamp = parseDateTimestamp($datetime);
+
+    return ($timestamp === false)
+        ? 'N/A'
+        : date($format, $timestamp);
+}
+
+/**
+ * Format a date and time safely.
+ */
+function formatDateTime($datetime, $format = 'M d, Y h:i A') {
+    $timestamp = parseDateTimestamp($datetime);
+
+    return ($timestamp === false)
+        ? 'N/A'
+        : date($format, $timestamp);
+}
+
+/**
+ * Return a human-readable time difference.
+ */
+function timeAgo($datetime) {
+    $timestamp = parseDateTimestamp($datetime);
+
+    if ($timestamp === false) {
+        return 'Unknown';
+    }
+
+    $difference = time() - $timestamp;
+
+    if ($difference < 0) {
+        return 'Just now';
+    }
+
+    if ($difference < 60) {
+        return 'Just now';
+    }
+
+    if ($difference < 3600) {
+        $minutes = (int) floor($difference / 60);
+        return $minutes . ' minute' . ($minutes === 1 ? '' : 's') . ' ago';
+    }
+
+    if ($difference < 86400) {
+        $hours = (int) floor($difference / 3600);
+        return $hours . ' hour' . ($hours === 1 ? '' : 's') . ' ago';
+    }
+
+    if ($difference < 604800) {
+        $days = (int) floor($difference / 86400);
+        return $days . ' day' . ($days === 1 ? '' : 's') . ' ago';
+    }
+
+    if ($difference < 2592000) {
+        $weeks = (int) floor($difference / 604800);
+        return $weeks . ' week' . ($weeks === 1 ? '' : 's') . ' ago';
+    }
+
+    if ($difference < 31536000) {
+        $months = (int) floor($difference / 2592000);
+        return $months . ' month' . ($months === 1 ? '' : 's') . ' ago';
+    }
+
+    $years = (int) floor($difference / 31536000);
+
+    return $years . ' year' . ($years === 1 ? '' : 's') . ' ago';
+}
+
+/**
+ * Return the remaining time until a specified date.
+ */
+function timeRemaining($endDate) {
+    $endTimestamp = parseDateTimestamp($endDate);
+
+    if ($endTimestamp === false) {
+        return 'Unknown';
+    }
+
+    $difference = $endTimestamp - time();
+
+    if ($difference <= 0) {
         return 'Ended';
     }
-    
-    $days = floor($diff / 86400);
-    $hours = floor(($diff % 86400) / 3600);
-    $minutes = floor(($diff % 3600) / 60);
-    $seconds = $diff % 60;
-    
+
+    $days = (int) floor($difference / 86400);
+    $hours = (int) floor(($difference % 86400) / 3600);
+    $minutes = (int) floor(($difference % 3600) / 60);
+
     if ($days > 0) {
-        return "{$days}d {$hours}h {$minutes}m";
-    } elseif ($hours > 0) {
-        return "{$hours}h {$minutes}m";
-    } elseif ($minutes > 0) {
-        return "{$minutes}m {$seconds}s";
-    } else {
-        return "{$seconds}s";
+        return $days . 'd ' . $hours . 'h remaining';
     }
+
+    if ($hours > 0) {
+        return $hours . 'h ' . $minutes . 'm remaining';
+    }
+
+    return $minutes . 'm remaining';
 }
 
+/**
+ * Check whether a date has expired.
+ */
 function isExpired($datetime) {
-    return strtotime($datetime) < time();
+    $timestamp = parseDateTimestamp($datetime);
+
+    if ($timestamp === false) {
+        return false;
+    }
+
+    return $timestamp < time();
 }
 
 // =============================================
 // NUMBER & CURRENCY FUNCTIONS
 // =============================================
 
+/**
+ * Check whether a value is a valid finite number.
+ */
+function isValidMoneyValue($value) {
+    return is_numeric($value) && is_finite((float) $value);
+}
+
+/**
+ * Format an amount with a currency symbol.
+ */
 function formatPrice($amount, $currency = '₦') {
-    return $currency . number_format($amount, 2);
+    if (!isValidMoneyValue($amount)) {
+        $amount = 0;
+    }
+
+    if (!is_scalar($currency)) {
+        $currency = '₦';
+    }
+
+    return (string) $currency . number_format((float) $amount, 2);
 }
 
+/**
+ * Format an amount without a currency symbol.
+ */
 function formatPriceRaw($amount) {
-    return number_format($amount, 2);
+    if (!isValidMoneyValue($amount)) {
+        $amount = 0;
+    }
+
+    return number_format((float) $amount, 2);
 }
 
+/**
+ * Calculate a percentage fee.
+ */
 function calculateFee($amount, $percentage) {
-    return ($amount * $percentage) / 100;
+    if (
+        !isValidMoneyValue($amount) ||
+        !isValidMoneyValue($percentage)
+    ) {
+        return 0.0;
+    }
+
+    return ((float) $amount * (float) $percentage) / 100;
 }
 
+/**
+ * Calculate the amount remaining after deducting a percentage fee.
+ */
 function calculateNetAmount($amount, $feePercentage) {
+    if (
+        !isValidMoneyValue($amount) ||
+        !isValidMoneyValue($feePercentage)
+    ) {
+        return 0.0;
+    }
+
     $fee = calculateFee($amount, $feePercentage);
-    return $amount - $fee;
+
+    return (float) $amount - $fee;
 }
 
+/**
+ * Format an amount in Nigerian Naira.
+ */
 function formatNaira($amount, $withSymbol = true) {
-    $formatted = number_format($amount, 2);
+    if (!isValidMoneyValue($amount)) {
+        $amount = 0;
+    }
+
+    $formatted = number_format((float) $amount, 2);
+
     return $withSymbol ? '₦' . $formatted : $formatted;
 }
-
 // =============================================
 // FILE FUNCTIONS
 // =============================================

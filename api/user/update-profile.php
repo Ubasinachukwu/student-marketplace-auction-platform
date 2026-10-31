@@ -21,8 +21,14 @@ if ($fullName === '') {
     redirect(SITE_URL . '/buyer/settings.php?tab=profile');
 }
 
+// Validate state and LGA selection.
 if ($state !== '' && !isValidNigerianState($state)) {
     setError('Please select a valid Nigerian state.');
+    redirect(SITE_URL . '/buyer/settings.php?tab=profile');
+}
+
+if ($state === '' && $lga !== '') {
+    setError('Please select a state before selecting an LGA.');
     redirect(SITE_URL . '/buyer/settings.php?tab=profile');
 }
 
@@ -30,7 +36,6 @@ if ($state !== '' && $lga !== '' && !isValidLGA($state, $lga)) {
     setError('Please select a valid LGA for the chosen state.');
     redirect(SITE_URL . '/buyer/settings.php?tab=profile');
 }
-
 // Handle picture upload
 $profilePicFilename = null;
 

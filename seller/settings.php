@@ -34,15 +34,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (empty($fullName)) {
                 $errors[] = 'Full name is required';
-            }
+            // Validate state and LGA selection.
+if ($state !== '' && !isValidNigerianState($state)) {
+    $errors[] = 'Please select a valid Nigerian state';
+}
 
-            if (!empty($state) && !isValidNigerianState($state)) {
-                $errors[] = 'Please select a valid Nigerian state';
-            }
+if ($state === '' && $lga !== '') {
+    $errors[] = 'Please select a state before selecting an LGA';
+}
 
-            if (!empty($state) && !empty($lga) && !isValidLGA($state, $lga)) {
-                $errors[] = 'Please select a valid LGA for the chosen state';
-            }
+if ($state !== '' && $lga !== '' && !isValidLGA($state, $lga)) {
+    $errors[] = 'Please select a valid LGA for the chosen state';
+}
 
             if (!empty($errors)) {
                 throw new Exception(implode('<br>', $errors));
@@ -578,57 +581,115 @@ include __DIR__ . '/../includes/header.php';
 <script>
 const nigeriaStatesLGAs = <?php echo getStatesLGAsJson(); ?>;
 
-function loadLGAs(state) {
+const savedSellerLGA = <?php echo json_encode(
+    $user['lga'] ?? '',
+    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+); ?>;
+
+// Load LGAs for the selected state.
+function loadLGAs(state, selectedLGA = '') {
     const lgaSelect = document.getElementById('lga');
-    const currentLGA = '<?php echo htmlspecialchars($user['lga'] ?? ''); ?>';
-    
-    lgaSelect.innerHTML = '<option value="">Select LGA</option>';
-    
-    if (!state || !nigeriaStatesLGAs[state]) {
+
+    if (!lgaSelect) {
         return;
     }
-    
+
+    lgaSelect.innerHTML = '<option value="">Select LGA</option>';
+
+    if (
+        !state ||
+        !Object.prototype.hasOwnProperty.call(nigeriaStatesLGAs, state)
+    ) {
+        return;
+    }
+
     nigeriaStatesLGAs[state].forEach(function(lga) {
         const option = document.createElement('option');
+
         option.value = lga;
         option.textContent = lga;
-        if (lga === currentLGA) {
+
+        if (lga === selectedLGA) {
             option.selected = true;
         }
+
         lgaSelect.appendChild(option);
     });
 }
 
+// Show or hide password characters.
 function togglePassword(fieldId) {
     const input = document.getElementById(fieldId);
+
+    if (!input) {
+        return;
+    }
+
     const btn = input.nextElementSibling;
-    const icon = btn.querySelector('i');
-    
+    const icon = btn ? btn.querySelector('i') : null;
+
     if (input.type === 'password') {
         input.type = 'text';
-        icon.className = 'bi bi-eye-slash';
+
+        if (icon) {
+            icon.className = 'bi bi-eye-slash';
+        }
     } else {
         input.type = 'password';
-        icon.className = 'bi bi-eye';
+
+        if (icon) {
+            icon.className = 'bi bi-eye';
+        }
     }
 }
 
+// Switch between payout methods.
 function togglePayoutMethod(method) {
-    document.getElementById('bankFields').style.display = method === 'bank' ? 'block' : 'none';
-    document.getElementById('paystackFields').style.display = method === 'paystack' ? 'block' : 'none';
-    
-    document.querySelectorAll('.form-check.card').forEach(c => c.classList.remove('border-primary'));
-    document.getElementById('payout_' + method).closest('.form-check.card').classList.add('border-primary');
+    const bankFields = document.getElementById('bankFields');
+    const paystackFields = document.getElementById('paystackFields');
+    const selectedMethod = document.getElementById('payout_' + method);
+
+    if (bankFields) {
+        bankFields.style.display = method === 'bank' ? 'block' : 'none';
+    }
+
+    if (paystackFields) {
+        paystackFields.style.display = method === 'paystack' ? 'block' : 'none';
+    }
+
+    document.querySelectorAll('.form-check.card').forEach(function(card) {
+        card.classList.remove('border-primary');
+    });
+
+    if (selectedMethod) {
+        const card = selectedMethod.closest('.form-check.card');
+
+        if (card) {
+            card.classList.add('border-primary');
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    // Restore the saved LGA when the profile section first loads.
+    const stateSelect = document.getElementById('state');
+
+    if (stateSelect && stateSelect.value) {
+        loadLGAs(stateSelect.value, savedSellerLGA);
+    }
+
+    // Check whether the new password and confirmation match.
     const newPass = document.getElementById('new_password');
     const confirmPass = document.getElementById('confirm_password');
     const feedback = document.getElementById('passwordMatchFeedback');
 
     if (newPass && confirmPass && feedback) {
         function checkMatch() {
-            if (confirmPass.value.length > 0 && newPass.value !== confirmPass.value) {
+            if (
+                confirmPass.value.length > 0 &&
+                newPass.value !== confirmPass.value
+            ) {
                 confirmPass.classList.add('is-invalid');
                 feedback.style.display = 'block';
             } else {
@@ -636,15 +697,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 feedback.style.display = 'none';
             }
         }
+
         newPass.addEventListener('input', checkMatch);
         confirmPass.addEventListener('input', checkMatch);
     }
-
-    const stateSelect = document.getElementById('state');
-    if (stateSelect && stateSelect.value) {
-        loadLGAs(stateSelect.value);
-    }
 });
 </script>
-
 <?php include __DIR__ . '/../includes/footer.php'; ?>

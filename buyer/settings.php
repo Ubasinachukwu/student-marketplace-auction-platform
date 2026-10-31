@@ -249,32 +249,74 @@ include __DIR__ . '/../includes/header.php';
 <script>
 const nigeriaStatesLGAs = <?php echo getStatesLGAsJson(); ?>;
 
-function loadLGAs(state) {
+const savedBuyerLGA = <?php echo json_encode(
+    $user['lga'] ?? '',
+    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+); ?>;
+
+function loadLGAs(state, selectedLGA = '') {
     const lgaSelect = document.getElementById('lga');
+
+    if (!lgaSelect) {
+        return;
+    }
+
     lgaSelect.innerHTML = '<option value="">Select LGA</option>';
-    if (!state || !nigeriaStatesLGAs[state]) return;
+
+    if (
+        !state ||
+        !Object.prototype.hasOwnProperty.call(nigeriaStatesLGAs, state)
+    ) {
+        return;
+    }
+
     nigeriaStatesLGAs[state].forEach(function(lga) {
         const option = document.createElement('option');
+
         option.value = lga;
         option.textContent = lga;
+
+        if (lga === selectedLGA) {
+            option.selected = true;
+        }
+
         lgaSelect.appendChild(option);
     });
 }
 
-// Image preview on select
-document.getElementById('profile_pic')?.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            const avatar = document.querySelector('.rounded-circle');
-            if (avatar && avatar.tagName === 'IMG') {
-                avatar.src = ev.target.result;
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Restore the user's saved LGA when the profile tab loads.
+    const stateSelect = document.getElementById('state');
+
+    if (stateSelect && stateSelect.value) {
+        loadLGAs(stateSelect.value, savedBuyerLGA);
+    }
+
+    // Profile picture preview.
+    const profilePictureInput = document.getElementById('profile_pic');
+
+    if (profilePictureInput) {
+        profilePictureInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+
+            if (!file) {
+                return;
             }
-        };
-        reader.readAsDataURL(file);
+
+            const reader = new FileReader();
+
+            reader.onload = function(ev) {
+                const avatar = document.querySelector('.rounded-circle');
+
+                if (avatar && avatar.tagName === 'IMG') {
+                    avatar.src = ev.target.result;
+                }
+            };
+
+            reader.readAsDataURL(file);
+        });
     }
 });
 </script>
-
 <?php include __DIR__ . '/../includes/footer.php'; ?>
